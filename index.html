@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>After School Classes</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>After School Classes</h1>
+            <button 
+                @click="toggleCart" 
+                :disabled="cart.length === 0"
+                class="cart-button"
+            >
+                <i class="fas fa-shopping-cart"></i> Shopping Cart ({{cart.length}})
+            </button>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input 
+                type="text" 
+                v-model="searchQuery" 
+                @input="searchLessons"
+                placeholder="Search lessons..."
+            >
+        </div>
+
+        <!-- Sort Controls -->
+        <div class="sort-controls">
+            <select v-model="sortBy">
+                <option value="subject">Subject</option>
+                <option value="location">Location</option>
+                <option value="price">Price</option>
+                <option value="spaces">Spaces</option>
+            </select>
+            <select v-model="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </div>
+
+        <!-- Main Content -->
+        <main v-if="!showCart">
+            <div class="lessons-grid">
+                <div v-for="lesson in sortedLessons" :key="lesson._id" class="lesson-card">
+                    <i :class="lesson.icon" class="lesson-icon"></i>
+                    <h2>{{lesson.subject}}</h2>
+                    <p><i class="fas fa-map-marker-alt"></i> {{lesson.location}}</p>
+                    <p><i class="fas fa-dollar-sign"></i> {{lesson.price}}</p>
+                    <p><i class="fas fa-user-friends"></i> Spaces: {{lesson.spaces}}</p>
+                    <button 
+                        @click="addToCart(lesson)"
+                        :disabled="lesson.spaces === 0"
+                        class="add-to-cart-btn"
+                    >
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Shopping Cart -->
+        <div v-else class="shopping-cart">
+            <h2>Shopping Cart</h2>
+            <div v-if="cart.length === 0" class="empty-cart">
+                Your cart is empty
+            </div>
+            <div v-else>
+                <div v-for="item in cart" :key="item._id" class="cart-item">
+                    <div class="item-details">
+                        <h3>{{item.subject}}</h3>
+                        <p>Location: {{item.location}}</p>
+                        <p>Price: ${{item.price}}</p>
+                    </div>
+                    <button @click="removeFromCart(item)" class="remove-btn">
+                        Remove
+                    </button>
+                </div>
+
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <h3>Checkout</h3>
+                    <input 
+                        type="text" 
+                        v-model="checkoutForm.name"
+                        placeholder="Name (letters only)"
+                    >
+                    <input 
+                        type="text" 
+                        v-model="checkoutForm.phone"
+                        placeholder="Phone (numbers only)"
+                    >
+                    <button 
+                        @click="submitOrder"
+                        :disabled="!isCheckoutValid"
+                        class="checkout-btn"
+                    >
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
